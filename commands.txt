@@ -1,0 +1,31 @@
+
+#rabbit
+docker run -d --hostname my-rabbit --name some-rabbit -p 8050:15672 -p 5672:5672 fdfbcf5af4971d0575931551e023cf428514c58079b3a272b1815adb90c8a4c3
+docker exec -it some-rabbit sh 
+
+#mongo
+docker run --name mongodb -d -p 27017:27017 2070962e76e18a7a91ee3b8f031f82c9d1bbb6dbf35cbee794b0f05efee13644
+
+#my auth service
+docker run -d -p 8080:8080 --name authsrv f06da71210b5acac9ad1368fcdf260ea0826da48d705d60556417f7bb44b9de6
+
+#entry
+
+docker run -d -p 8090:8090 --name entry 765fc28e123c102dde80ab08301cb4d3ef0578f27af01d17929fce2b6fcd597e
+
+# alert
+
+docker run -d --name alert 08d8b25f572e500538179ac030d50f77d43f2b5a9599f38651a15c0dec8c869d
+
+# converter
+
+docker run -d --name converter 3b1ec8cbaedeaea9af6d9231aa7fc745c4da23bc5571dbb68ad451f468659b10
+
+# postgres
+docker run --name postgres_auth -p 5555:5432 -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=users -d postgres
+
+# test login route with cookies
+async function login() {
+  await fetch('http://127.0.0.1:5000/auth/login',
+ {method: 'post', headers: {'Authorization': 'Basic ' + btoa('admin:admin')}, credentials: "include" });
+}
