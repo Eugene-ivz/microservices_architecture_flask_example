@@ -14,10 +14,10 @@ def upload_file(f, gfs, ch, payload):
     msg = {
         'pdf_id': str(file_id),
         'text_id': None,
-        'username': payload['username']}
+        'username': payload['sub']}
     try: 
         # basic exchange with rkey == queue name
-        ch.basic_publish(exchange='', routing_key=os.getenv('PDF_TO_TEXT_QUEUE'), \
+        ch.basic_publish(exchange='', routing_key=os.getenv('FLASK_PDF_TO_TEXT_QUEUE'), \
             properties=pika.BasicProperties(delivery_mode=2), body=json.dumps(msg),)
     except Exception as e:
         gfs.delete(file_id)

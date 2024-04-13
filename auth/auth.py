@@ -69,7 +69,6 @@ def logout():
     payload = get_jwt()
     jti = payload["jti"]
     token_type = payload["type"]
-    print(jti, token_type)
     try:
         token_blocklist = TokenBlocklist(jti=jti, token_type=token_type)
         current_user.is_authenticated = False

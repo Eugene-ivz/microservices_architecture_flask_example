@@ -1,5 +1,4 @@
 import os
-from flask import g, jsonify, redirect, url_for, Response
 import httpx
 
 def create_user(request):
@@ -26,7 +25,9 @@ def get_jwt(request):
         return None, response.text
     
 def validate_jwt(request):
-    response = httpx.post(f'http://{os.getenv("FLASK_AUTH_VALIDATE_JWT")}')
+    headers = {'X-CSRF-TOKEN': request.cookies.get('csrf_access_token')}
+    response = httpx.post(f'http://{os.getenv("FLASK_AUTH_VALIDATE_JWT")}',
+                          cookies=request.cookies, headers=headers)
     if response.status_code == 200:
         return response.text, None
     else:
@@ -37,8 +38,17 @@ def logout_user(request):
     response = httpx.post(f'http://{os.getenv("FLASK_AUTH_LOGOUT")}',
                           cookies=request.cookies, headers=headers)
     if response.status_code == 200:
-        print(response.text)
         return response.text, None
     else:
-        print(response.text)
         return None, (response.text, response.status_code)
+    
+def add_auth_cookies(response, cookies):
+    response.set_cookie("access_token_cookie", cookies.get('access_token_cookie'),
+                                httponly=True, secure=True, samesite='none')
+    response.set_cookie("refresh_token_cookie", cookies.get('refresh_token_cookie'),
+                                httponly=True, secure=True, samesite='none', path=os.getenv('FLASK_REFRESH'))
+    response.set_cookie("csrf_access_token", cookies.get('csrf_access_token'),
+                                secure=True, samesite='none')
+    response.set_cookie("csrf_refresh_token", cookies.get('csrf_refresh_token'),
+                                secure=True, samesite='none', path=os.getenv('FLASK_REFRESH'))
+    return response

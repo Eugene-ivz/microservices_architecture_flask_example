@@ -5,6 +5,7 @@ def create_app():
     # flask
     app = Flask(__name__)
     app.config.from_prefixed_env()
+    app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024
     from entry.extensions import csrf, mongo # isort:skip
     # global csrf
     csrf.init_app(app)

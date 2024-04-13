@@ -2,6 +2,11 @@ import json
 
 
 def file_ready(msg):
+    '''
+    add here any functional to do with id of text file
+    like a emal notification
+    
+    '''
     try:
         msg = json.loads(msg)
         text_id = msg['text_id']

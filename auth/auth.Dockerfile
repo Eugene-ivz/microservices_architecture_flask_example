@@ -11,8 +11,9 @@ COPY ./requirements.txt /app
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . /app
 
+RUN flask db init && flask db migrate && flask db upgrade
+
 EXPOSE 8080
 
 ENTRYPOINT [ "python3", "views.py"  ]
-#CMD ['flask', 'db', 'init']
-#CMD ['flask', 'db', 'upgrade']
+

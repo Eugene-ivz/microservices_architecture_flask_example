@@ -41,9 +41,17 @@ def create_app():
         token = db.session.scalar(select(TokenBlocklist).where(TokenBlocklist.jti==jti))
         return token is not None
     
+    @jwt.revoked_token_loader
+    def is_token_revoked(jwt_header, jwt_payload: dict) -> bool:
+        return 'Need to login', 401
+    
     @jwt.needs_fresh_token_loader
     def need_fresh_token_callback(jwt_header, jwt_payload):
         return 'need fresh login', 401
+    
+    @jwt.expired_token_loader
+    def expired_token_callback(jwt_header, jwt_payload):
+        return 'Need to login', 401
     
     
     # refresh jwt token before expiration after request
@@ -66,4 +74,4 @@ def create_app():
 
 if __name__ == "__main__":
     app = create_app()
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run()

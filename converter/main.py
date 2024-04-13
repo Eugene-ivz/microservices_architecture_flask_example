@@ -37,9 +37,9 @@ def main():
             msg = json.loads(body)
             gfs_pdf.delete(ObjectId(msg['pdf_id']))
     ch.basic_consume(queue=os.getenv('PDF_TO_TEXT_QUEUE'), on_message_callback=callback)
-    
-    ch.start_consuming()
     print('Waiting for messages. To exit press CTRL+C')
+    ch.start_consuming()
+    
     
 if __name__ == "__main__":
     try:

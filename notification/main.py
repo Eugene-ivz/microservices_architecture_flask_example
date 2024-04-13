@@ -21,7 +21,7 @@ def main():
             ch.basic_ack(delivery_tag=method.delivery_tag)
 
     ch.basic_consume(queue=os.getenv('TEXT_TO_CONSUMER_QUEUE'), on_message_callback=callback)
-    
+    print('Waiting for messages. To exit press CTRL+C')
     ch.start_consuming()
     
 if __name__ == "__main__":

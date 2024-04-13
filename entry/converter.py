@@ -2,13 +2,14 @@ import json
 import os
 
 from bson import ObjectId
-from flask import Blueprint, request
+from flask import Blueprint, flash, redirect, render_template, request, send_file, url_for
 import gridfs
 import pika
 
 from entry.auth_utils import validate_jwt
 from entry.db_utils import upload_file
 from entry.extensions import mongo
+from entry.forms import File_download_form, File_upload_form
 
 converter_bp = Blueprint('converter', __name__, url_prefix='/converter')
 
@@ -26,45 +27,50 @@ conn = pika.BlockingConnection(pika.URLParameters(os.getenv('FLASK_RABBITMQ_HOST
 ch = conn.channel()
     
 # validate token in auth service and upload file to gridfs    
-@converter_bp.route('/upload', methods=['GET','POST'])
+@converter_bp.route('/upload', methods=['GET', 'POST'])
 def upload():
-    payload, error = validate_jwt(request)
-    
+    payload, error = validate_jwt(request) 
     if error:
         return error
     
-    payload = json.loads(payload)
+    form = File_upload_form()
     
-    if payload['allowed']:
-        if len(request.files) != 1:
-            return 'need 1(one) file', 400
-        for key, f in request.files.items():
+    if form.validate_on_submit():
+        
+        payload = json.loads(payload)
+        
+        if payload['allowed']:
+            f = form.file.data
             error = upload_file(f, gfs_pdf, ch, payload)
-            
             if error:
-                return error
-        return 'ok', 200
-    else:
-        return 'not authorized', 403
+                flash(error)
+                return redirect(url_for('upload'), 303)
+            return redirect(url_for('converter.download'), 303)
+        else:
+            return 'not authorized', 403
+    return render_template('upload.html', form=form)
     
-@converter_bp.route('/download', methods=['GET'])
+@converter_bp.route('/download', methods=['GET', 'POST'])
 def download():
     payload, error = validate_jwt(request)
     
     if error:
         return error
     
-    payload = json.loads(payload)
-    if payload['allowed']:
-        text_id = request.args.get('text_id')
-        
-        if not text_id:
-            return 'need text_id', 400
-        try:
-            f = gfs_txt.get(ObjectId(text_id))
-            return 'OK FILE READY FOR DOWNLOAD', 200
-        except Exception as e:
-            print('file not found', e)
-            return 'file not found', 500  
-    else:
-        return 'not authorized', 403
+    form = File_download_form()
+    
+    if form.validate_on_submit():
+        payload = json.loads(payload)
+        if payload['allowed']:
+            text_id = request.form.get('text_id')
+            if not text_id:
+                return 'need text_id', 400
+            try:
+                f = gfs_txt.get(ObjectId(text_id))
+                return send_file(f, as_attachment=True, download_name=f'{text_id}.txt')
+            except Exception as e:
+                flash('file not found')
+                return redirect(url_for('converter.download'), 303)  
+        else:
+            return 'not authorized', 403
+    return render_template('download.html', form=form)

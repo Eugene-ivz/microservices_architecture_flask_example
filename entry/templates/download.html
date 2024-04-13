@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% from "_formhelpers.html" import render_field %}
+
+{% block header %}
+  <title>{% block title %}File Download{% endblock %}</title>
+{% endblock %}
+
+{% block body %}
+    <h1>File Download</h1>
+    <form method="POST" action="">
+      {{ form.csrf_token }}
+      <dl>
+        {{ render_field(form.text_id) }}
+      </dl>
+      <p><input type="submit" value="Submit"></p>
+    </form>
+    <li><a href="{{ url_for('auth.logout') }}">Logout</a>
+    <li><a href="{{ url_for('index') }}">To start page</a>
+{% endblock %}

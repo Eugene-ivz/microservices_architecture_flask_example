@@ -1,6 +1,6 @@
 import os
-from flask import Blueprint, flash, make_response, redirect, render_template, request, url_for, Response
-from entry.auth_utils import create_user, get_jwt, logout_user, validate_jwt
+from flask import Blueprint, flash, make_response, redirect, render_template, request, url_for
+from entry.auth_utils import add_auth_cookies, create_user, get_jwt, logout_user
 from entry.forms import User_login_form, User_registration_form
 
 
@@ -27,18 +27,7 @@ def login():
         cookies, error = get_jwt(request)
         if not error:
             response = make_response(redirect(url_for('index'), 303))
-            #response.headers['access_token_cookie']=resp.headers['access_token_cookie']
-            #resp  = Response(response=response.content, status=response.status_code, headers=response.headers.items())
-            # #TODO set cookie from cookies dict
-            #print(cookies.json())
-            response.set_cookie("access_token_cookie", cookies.get('access_token_cookie'),
-                                httponly=True, secure=True, samesite='none')
-            response.set_cookie("refresh_token_cookie", cookies.get('refresh_token_cookie'),
-                                httponly=True, secure=True, samesite='none', path=os.getenv('FLASK_REFRESH'))
-            response.set_cookie("csrf_access_token", cookies.get('csrf_access_token'),
-                                secure=True, samesite='none')
-            response.set_cookie("csrf_refresh_token", cookies.get('csrf_refresh_token'),
-                                secure=True, samesite='none', path=os.getenv('FLASK_REFRESH'))
+            response = add_auth_cookies(response, cookies)
             return response
         else:
             flash(error)
@@ -48,16 +37,10 @@ def login():
 
 @auth_bp.route('/logout', methods=['GET'])
 def logout():
-    payload, error = logout_user(request)
-    #user = payload.get(['sub']) 
+    ok, error = logout_user(request)
     if error:
         flash('Need to login first')
         return redirect(url_for('index'), 303)
     else:
         flash('successful logout')
         return redirect(url_for('index'), 303)
-        
-
-@auth_bp.route('/delete', methods=['DELETE'])
-def delete_user():
-    pass
