@@ -21,6 +21,10 @@ __pycache__/
 */*/*.py[cod]
 */*/*/*.py[cod]
 
+# pytest
+tests/
+conftest.py
+
 # C extensions
 *.so
 

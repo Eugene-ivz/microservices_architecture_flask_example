@@ -66,6 +66,10 @@ coverage.xml
 # Django stuff:
 *.log
 
+# pytest
+tests/
+conftest.py
+
 # Sphinx documentation
 docs/_build/
 

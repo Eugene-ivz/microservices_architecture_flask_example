@@ -1,8 +1,8 @@
-from bson import Regex
+from re import M
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileAllowed, FileField
 from wtforms import EmailField, PasswordField, StringField, SubmitField
 from wtforms.validators import DataRequired, Email, EqualTo, Optional, Regexp
-from flask_wtf.file import FileField, FileAllowed
 
 
 class User_registration_form(FlaskForm):
@@ -22,7 +22,7 @@ class User_registration_form(FlaskForm):
             EqualTo("password", message="Password must match"),
         ],
     )
-    email = EmailField("Email (optional)", validators=[Optional(), Email()])
+    email = EmailField("Email (optional)", validators=[DataRequired(message="email required"), Email()])
 
 
 class User_login_form(FlaskForm):

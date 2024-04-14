@@ -15,5 +15,5 @@ RUN flask db init && flask db migrate && flask db upgrade
 
 EXPOSE 8080
 
-ENTRYPOINT [ "python3", "views.py"  ]
+ENTRYPOINT [ "gunicorn", "--bind", "0.0.0.0:5000", "app:create_app()"  ]
 
