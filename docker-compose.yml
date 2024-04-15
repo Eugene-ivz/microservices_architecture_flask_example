@@ -1,0 +1,42 @@
+version: '3.8'
+services:
+  auth:
+    image: 'auth'
+    build:
+      context: auth
+      dockerfile: Dockerfile
+    ports:
+      - '5000:5000'
+  entry:
+    image: 'entry'
+    build:
+      context: entry
+      dockerfile: Dockerfile
+    ports:
+      - '5001:5001'
+  converter:
+    image: 'converter'
+    build:
+      context: converter
+      dockerfile: Dockerfile
+  notification:
+    image: 'notification'
+    build:
+      context: notification
+      dockerfile: Dockerfile
+
+  mongodb:
+    image: 'mongo'
+    ports:
+      - '27017:27017'
+
+  rabbitmq:
+    image: 'rabbitmq'
+    ports:
+      - '5672:5672'
+      
+  postgres:
+    image: 'postgres'
+    ports:
+      - '5432:5432'
+

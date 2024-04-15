@@ -2,12 +2,12 @@ import datetime
 import uuid
 from typing import Optional
 
+import sqlalchemy
 from flask_jwt_extended import get_current_user
 from sqlalchemy import ForeignKey, String
-import sqlalchemy
 from sqlalchemy.orm import Mapped, mapped_column
 
-from auth.extensions import db
+from app.extensions import db
 
 
 class User(db.Model):

@@ -1,22 +1,30 @@
 import json
-import os
 
 import gridfs
 import pika
 from bson import ObjectId
-from flask import (Blueprint, flash, redirect, render_template, request,
-                   send_file, url_for)
+from flask import (
+    Blueprint,
+    current_app,
+    flash,
+    redirect,
+    render_template,
+    request,
+    send_file,
+    url_for,
+)
 
-from entry.auth_utils import validate_jwt
-from entry.db_utils import upload_file
-from entry.extensions import mongo
-from entry.forms import File_download_form, File_upload_form
+from app.auth_utils import validate_jwt
+from app.config import Config
+from app.db_utils import upload_file
+from app.extensions import mongo
+from app.forms import File_download_form, File_upload_form
 
 converter_bp = Blueprint("converter", __name__, url_prefix="/converter")
 
 # pymongo
-mongo_pdf = mongo.cx[os.getenv("FLASK_MONGO_URI_PDF")]
-mongo_txt = mongo.cx[os.getenv("FLASK_MONGO_URI_TXT")]
+mongo_pdf = mongo.cx[Config.MONGO_URI_PDF]
+mongo_txt = mongo.cx[Config.MONGO_URI_TXT]
 
 # gridfs
 gfs_pdf = gridfs.GridFS(mongo_pdf)
@@ -24,7 +32,7 @@ gfs_txt = gridfs.GridFS(mongo_txt)
 
 
 # rabbitmq
-conn = pika.BlockingConnection(pika.URLParameters(os.getenv("FLASK_RABBITMQ_HOST")))
+conn = pika.BlockingConnection(pika.URLParameters(Config.RABBITMQ_HOST))
 ch = conn.channel()
 
 
@@ -46,7 +54,7 @@ def upload():
             error = upload_file(f, gfs_pdf, ch, payload)
             if error:
                 flash(error)
-                return redirect(url_for("upload"), 303)
+                return redirect(url_for("converter.upload"), 303)
             return redirect(url_for("converter.download"), 303)
         else:
             return "not authorized", 403

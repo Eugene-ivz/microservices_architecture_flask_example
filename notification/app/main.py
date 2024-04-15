@@ -4,13 +4,14 @@ import sys
 import pika
 from dotenv import load_dotenv
 
-from utils import file_ready
+from app.utils import file_ready
 
 load_dotenv()
 
+
 def main():
 
-    conn = pika.BlockingConnection(pika.URLParameters(os.getenv('RABBITMQ_HOST')))
+    conn = pika.BlockingConnection(pika.URLParameters(os.getenv("RABBITMQ_HOST")))
     ch = conn.channel()
 
     def callback(ch, method, properties, body):
@@ -20,15 +21,21 @@ def main():
         else:
             ch.basic_ack(delivery_tag=method.delivery_tag)
 
-    ch.basic_consume(queue=os.getenv('TEXT_TO_CONSUMER_QUEUE'), on_message_callback=callback)
-    print('Waiting for messages. To exit press CTRL+C')
-    ch.start_consuming()
-    
+    ch.basic_consume(
+        queue=os.getenv("TEXT_TO_CONSUMER_QUEUE"), on_message_callback=callback
+    )
+    print("Waiting for messages. To exit press CTRL+C")
+    try:
+        ch.start_consuming()
+    except pika.exceptions.ConnectionClosedByBroker:
+        ch.start_consuming()
+
+
 if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print('Interrupted')
+        print("Interrupted")
         try:
             sys.exit(0)
         except SystemExit:

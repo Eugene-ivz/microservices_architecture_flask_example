@@ -2,9 +2,9 @@ from flask import Blueprint, request
 from flask_jwt_extended import current_user, jwt_required
 from sqlalchemy import exc, select
 
-from auth.extensions import db
-from auth.hashing import get_password_hash
-from auth.models import User
+from app.extensions import db
+from app.hashing import get_password_hash
+from app.models import User
 
 users_bp = Blueprint("users", __name__, url_prefix="/users")
 

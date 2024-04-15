@@ -4,39 +4,39 @@ from datetime import UTC, datetime, timedelta
 from flask import Flask
 from flask_jwt_extended import get_jwt, get_jwt_identity, set_access_cookies
 from sqlalchemy import select
-from auth.extensions import cors, db, jwt, migrate
+
+from app.extensions import cors, db, jwt, migrate
+
 
 def create_app(test_config=None):
     app = Flask(__name__)
-    app.config['FLASK_ENV'] = os.getenv('FLASK_ENV')
-    if app.config['FLASK_ENV'] == 'development':
-        app.config.from_object('auth.config.DevelopmentConfig')
-    elif app.config['FLASK_ENV'] == 'production':
-        app.config.from_object('auth.config.ProductionConfig')
-    elif app.config['FLASK_ENV'] == 'testing':
-        app.config.from_object('auth.config.TestingConfig')
-    
+    app.config["FLASK_ENV"] = os.getenv("FLASK_ENV")
+    if app.config["FLASK_ENV"] == "development":
+        app.config.from_object("app.config.DevelopmentConfig")
+    elif app.config["FLASK_ENV"] == "production":
+        app.config.from_object("app.config.ProductionConfig")
+    elif app.config["FLASK_ENV"] == "testing":
+        app.config.from_object("app.config.TestingConfig")
+
     if test_config:
         app.config.update(test_config)
-        
-    
-    
+
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
     cors.init_app(app)
 
     # blueprints
-    from auth.auth import auth_bp  # isort:skip
+    from app.auth import auth_bp  # isort:skip
 
     app.register_blueprint(auth_bp)
-    from auth.users import users_bp  # isort:skip
+    from app.users import users_bp  # isort:skip
 
     app.register_blueprint(users_bp)
 
     # jwt loaders
-    from auth.jwt_utils import create_access_JWT # isort:skip
-    from auth.models import TokenBlocklist, User # isort:skip
+    from app.jwt_utils import create_access_JWT  # isort:skip
+    from app.models import TokenBlocklist, User  # isort:skip
 
     # get user in protected jwt route
     @jwt.user_lookup_loader

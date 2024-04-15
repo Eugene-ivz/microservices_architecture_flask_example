@@ -1,13 +1,19 @@
 from flask import Blueprint, flash, jsonify, make_response, request, url_for
-from flask_jwt_extended import (current_user, get_jwt, get_jwt_identity,
-                                jwt_required, set_access_cookies,
-                                set_refresh_cookies, unset_jwt_cookies)
+from flask_jwt_extended import (
+    current_user,
+    get_jwt,
+    get_jwt_identity,
+    jwt_required,
+    set_access_cookies,
+    set_refresh_cookies,
+    unset_jwt_cookies,
+)
 from sqlalchemy import select
 
-from auth.extensions import db
-from auth.hashing import verify_password
-from auth.jwt_utils import create_access_JWT, create_refresh_JWT
-from auth.models import TokenBlocklist, User
+from app.extensions import db
+from app.hashing import verify_password
+from app.jwt_utils import create_access_JWT, create_refresh_JWT
+from app.models import TokenBlocklist, User
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 

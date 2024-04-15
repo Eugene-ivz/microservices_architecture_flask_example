@@ -8,8 +8,8 @@ from flask import (
     url_for,
 )
 
-from entry.auth_utils import add_auth_cookies, create_user, get_jwt, logout_user
-from entry.forms import User_login_form, User_registration_form
+from app.auth_utils import add_auth_cookies, create_user, get_jwt, logout_user
+from app.forms import User_login_form, User_registration_form
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
