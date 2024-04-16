@@ -10,7 +10,13 @@ env_file = find_dotenv(f'.env.{os.getenv("APP_ENV", "dev")}')
 load_dotenv(env_file)
 
 
-def main():
+def main() -> None:
+    '''
+    connect to RabbitMQ server and start consuming messages
+    from queue to get id of the text file
+    and send it to file_ready function
+    
+    '''
 
     conn = pika.BlockingConnection(pika.URLParameters(os.getenv("RABBITMQ_HOST")))
     ch = conn.channel()

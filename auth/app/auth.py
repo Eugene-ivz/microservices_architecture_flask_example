@@ -20,6 +20,13 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 @auth_bp.route("/login", methods=["POST"])
 def create_jwt():
+    '''
+    endpoint to create jwt on login via basic auth
+    sets access and refresh cookies in response
+    
+    :return: message and status code
+    
+    '''
     auth = request.authorization
     if not auth:
         return "missing credentials", 401
@@ -47,6 +54,12 @@ def create_jwt():
 @auth_bp.route("/validate", methods=["POST"])
 @jwt_required()
 def validate_jwt():
+    '''
+    endpoint to validate jwt in cookie
+    
+    :return: json with jwt claims and status code
+    
+    '''
     try:
         claims = get_jwt()
     except:
@@ -57,6 +70,12 @@ def validate_jwt():
 @auth_bp.route("/refresh", methods=["POST"])
 @jwt_required(refresh=True)
 def refresh_jwt():
+    '''
+    endpoint to manual refresh jwt 
+    
+    :return: response with new access token and status code
+    
+    '''
     identity = get_jwt_identity()
     access_token = create_access_JWT(identity, True)
     response = jsonify({"msg": "refresh successful"}, 200)
@@ -67,6 +86,14 @@ def refresh_jwt():
 @auth_bp.route("/logout", methods=["POST"])
 @jwt_required()
 def logout():
+    '''
+    endpoint to logout
+    unsets jwt cookies and puts token in blocklist db table
+    marks user as not authenticated
+    
+    :return: message and status code
+    
+    '''
     payload = get_jwt()
     jti = payload["jti"]
     token_type = payload["type"]

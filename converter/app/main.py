@@ -14,7 +14,13 @@ env_file = find_dotenv(f'.env.{os.getenv("APP_ENV", "dev")}')
 load_dotenv(env_file)
 
 
-def main():
+def main()  -> None:
+    '''
+    connect to mongo server and rabbitmq server
+    start consuming messages from queue to get id of the pdf file in mongodb
+    and send it to convert_to_txt function
+    
+    '''
     client = MongoClient(os.getenv("MONGO_URI"))
     db_pdf = client["db_pdf"]
     db_txt = client["db_txt"]

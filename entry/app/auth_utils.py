@@ -7,6 +7,13 @@ from app.config import Config, ProductionConfig
 config = ProductionConfig if os.getenv("FLASK_ENV") == "production" else Config
 
 def create_user(request):
+    '''
+    post user registration data to auth user registration endpoint
+    
+    :param request: flask request object
+    :return: message and status code
+    
+    '''
     data = request.form
     if not data:
         return None, ("missing form data", 404)
@@ -19,6 +26,13 @@ def create_user(request):
 
 # get basic auth and post to auth login endpoint, return jwt token
 def get_jwt(request):
+    '''
+    get basic auth data and post to auth login endpoint, return jwt cookies in respose
+    
+    :param request: flask request object
+    :return: response with jwt cookies and status code | error message and status code
+    
+    '''
     data = request.form
     if not data:
         return None, ("missing credentials", 401)
@@ -31,6 +45,13 @@ def get_jwt(request):
 
 
 def validate_jwt(request):
+    '''
+    check if token is valid in jwt cookie
+    
+    :param request: flask request object
+    :return: jwt claims | error message and status code
+    
+    '''
     headers = {"X-CSRF-TOKEN": request.cookies.get("csrf_access_token")}
     response = httpx.post(
         config.AUTH_VALIDATE_JWT,
@@ -45,6 +66,13 @@ def validate_jwt(request):
 
 
 def logout_user(request):
+    '''
+    logout user by removing jwt cookies
+    
+    :param request: flask request object
+    :return: success message and status code | error message and status code
+    
+    '''
     headers = {"X-CSRF-TOKEN": request.cookies.get("csrf_access_token")}
     response = httpx.post(
         config.AUTH_LOGOUT,
@@ -59,6 +87,14 @@ def logout_user(request):
 
 
 def add_auth_cookies(response, cookies):
+    '''
+    helper function to set jwt cookies from response from auth service
+    
+    :param response: flask response object
+    :param cookies: response from auth service
+    :return: flask response object with jwt cookies
+    
+    '''
     response.set_cookie(
         "access_token_cookie",
         cookies.get("access_token_cookie"),

@@ -5,6 +5,10 @@ from wtforms.validators import DataRequired, Email, EqualTo, Regexp
 
 
 class User_registration_form(FlaskForm):
+    '''
+    form for user registration
+    
+    '''
     username = StringField(
         "Username", validators=[DataRequired(message="username required")]
     )
@@ -27,6 +31,10 @@ class User_registration_form(FlaskForm):
 
 
 class User_login_form(FlaskForm):
+    '''
+    form for user login
+    
+    '''
     username = StringField(
         "Username", validators=[DataRequired(message="username required")]
     )
@@ -39,6 +47,10 @@ class User_login_form(FlaskForm):
 
 
 class File_upload_form(FlaskForm):
+    '''
+    form for file upload
+    
+    '''
     file = FileField(
         "file",
         validators=[
@@ -50,6 +62,10 @@ class File_upload_form(FlaskForm):
 
 
 class File_download_form(FlaskForm):
+    '''
+    form for file download
+    
+    '''
     text_id = StringField(
         "text_id",
         validators=[

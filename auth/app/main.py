@@ -8,7 +8,13 @@ from sqlalchemy import select
 from app.extensions import cors, db, jwt, migrate
 
 
-def create_app(test_config=None):
+def create_app(test_config=None) -> Flask:
+    '''
+    Create and configure an instance of the Flask application.
+    
+    :param test_config: A configuration dictionary for testing purposes.
+    :return: An instance of the Flask application.
+    '''
     app = Flask(__name__)
     app.config["FLASK_ENV"] = os.getenv("FLASK_ENV")
     if app.config["FLASK_ENV"] == "development":
@@ -21,6 +27,7 @@ def create_app(test_config=None):
     if test_config:
         app.config.update(test_config)
 
+    # extensions
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
@@ -38,15 +45,21 @@ def create_app(test_config=None):
     from app.jwt_utils import create_access_JWT  # isort:skip
     from app.models import TokenBlocklist, User  # isort:skip
 
-    # get user in protected jwt route
     @jwt.user_lookup_loader
     def user_lookup_callback(_jwt_header, jwt_data):
+        '''
+        get user in protected jwt route
+        
+        '''
         identity = jwt_data["sub"]
         return db.session.scalar(select(User).where(User.username == identity))
 
-    # check if token in blocklist
     @jwt.token_in_blocklist_loader
     def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
+        '''
+        check if token in blocklist
+        
+        '''
         jti = jwt_payload["jti"]
         token = db.session.scalar(
             select(TokenBlocklist).where(TokenBlocklist.jti == jti)
@@ -55,19 +68,36 @@ def create_app(test_config=None):
 
     @jwt.revoked_token_loader
     def is_token_revoked(jwt_header, jwt_payload: dict) -> bool:
+        '''
+        if token in blocklist
+        returns login error
+        
+        '''
         return "Need to login", 401
 
     @jwt.needs_fresh_token_loader
     def need_fresh_token_callback(jwt_header, jwt_payload):
+        '''
+        check freshness of token
+        
+        '''
         return "need fresh login", 401
 
     @jwt.expired_token_loader
     def expired_token_callback(jwt_header, jwt_payload):
+        '''
+        check if token expired
+        
+        '''
         return "Need to login", 401
 
     # refresh jwt token before expiration after request
     @app.after_request
     def refresh_expiring_jwts(response):
+        '''
+        refresh jwt token before expiration after request
+        
+        '''
         try:
             exp_timestamp = get_jwt()["exp"]
             now = datetime.now(UTC)
@@ -85,4 +115,4 @@ def create_app(test_config=None):
 
 if __name__ == "__main__":
     app = create_app()
-    app.run()
+    app.run(port=5010)

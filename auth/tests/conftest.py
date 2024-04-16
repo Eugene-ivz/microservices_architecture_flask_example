@@ -8,6 +8,10 @@ from app.models import User
 
 @pytest.fixture(scope="session")
 def app():
+    '''
+    app fixture created from flask factory pattern function with test configuration
+    
+    '''
     test_config = {
         "TESTING": True,
         "SQLALCHEMY_DATABASE_URI": "postgresql+psycopg://postgres:postgres@localhost:5556/test_users",
@@ -21,11 +25,19 @@ def app():
 
 @pytest.fixture(scope="function")
 def client(app):
+    '''
+    flask test client
+      
+    '''
     yield app.test_client(use_cookies=True)
 
 
 @pytest.fixture(scope="session")
 def db(app, request):
+    '''
+    session scoped database
+    
+    '''
     def teardown():
         _db.drop_all()
 
@@ -38,6 +50,10 @@ def db(app, request):
 
 @pytest.fixture(scope="function")
 def user():
+    '''
+    user fixture
+    
+    '''
     user = User(
         username="test1", password=get_password_hash("test1"), email="test1@t.com"
     )
@@ -46,6 +62,10 @@ def user():
 
 @pytest.fixture(scope="function")
 def session(db, request, user):
+    '''
+    function scoped database connection
+    which rollsback at the end of the test
+    '''
     db.session.begin_nested()
 
     def commit():

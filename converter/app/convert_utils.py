@@ -7,7 +7,18 @@ import pika
 from bson.objectid import ObjectId
 
 
-def convert_to_txt(ch, gfs_pdf, gfs_txt, msg):
+def convert_to_txt(ch, gfs_pdf, gfs_txt, msg) -> Exception | None:
+    '''
+    get pdf file from mongo db and convert it to txt
+    put txt file in mongo db
+    and send its id to rabbitmq queue
+    
+    :param ch: rabbitmq channel
+    :param gfs_pdf: mongo db for pdf
+    :param gfs_txt: mongo db for txt
+    :param msg: message from rabbitmq queue
+    :return: Exception | None
+    '''
     msg = json.loads(msg)
 
     tm = tempfile.NamedTemporaryFile(suffix=".pdf", mode="r+b")

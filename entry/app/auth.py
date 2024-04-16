@@ -16,6 +16,12 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 @auth_bp.route("/registration", methods=["GET", "POST"])
 def user_registration():
+    '''
+    endpoint for user registration
+    
+    :return: message and status code
+    
+    '''
     form = User_registration_form()
     if form.validate_on_submit():
         error = create_user(request)
@@ -30,6 +36,13 @@ def user_registration():
 # get jwt token from auth service
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
+    '''
+    endpoint for user login
+    sets jwt cookies from response from auth service
+    
+    :return: flask redirect response | message and status code
+    
+    '''
     form = User_login_form()
     if form.validate_on_submit():
         cookies, error = get_jwt(request)
@@ -45,6 +58,13 @@ def login():
 
 @auth_bp.route("/logout", methods=["GET"])
 def logout():
+    '''
+    endpoint to logout
+    puts jwt in blocklist db table
+    
+    :return: flask redirect response
+    
+    '''
     ok, error = logout_user(request)
     if error:
         flash("Need to login first")

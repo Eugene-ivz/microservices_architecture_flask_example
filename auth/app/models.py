@@ -11,6 +11,10 @@ from app.extensions import db
 
 
 class User(db.Model):
+    '''
+    User model for storing user related details
+    
+    '''
 
     __tablename__ = "app_users"
 
@@ -26,6 +30,10 @@ class User(db.Model):
 
 
 class TokenBlocklist(db.Model):
+    '''
+    TokenBlocklist model for revoked tokens
+    
+    '''
 
     __tablename__ = "token_blocklist"
 

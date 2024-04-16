@@ -38,6 +38,12 @@ ch = conn.channel()
 # validate token in auth service and upload file to gridfs
 @converter_bp.route("/upload", methods=["GET", "POST"])
 def upload():
+    '''
+    check if token is valid in jwt cookie and pass file to upload function
+    
+    :return: flask redirect response
+    
+    '''
     payload, error = validate_jwt(request)
     if error:
         return 'need to login', 401
@@ -62,6 +68,14 @@ def upload():
 
 @converter_bp.route("/download", methods=["GET", "POST"])
 def download():
+    '''
+    check if token is valid in jwt cookie
+    gets id of text file from form and get file from mongodb
+    saves file on user's computer
+    
+    :return: file | flask redirect response
+    
+    '''
     payload, error = validate_jwt(request)
 
     if error:

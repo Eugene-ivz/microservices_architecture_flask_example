@@ -5,6 +5,8 @@ def file_ready(msg) -> str:
     """
     add here any functional to do with id of the text file
     like a emal notification
+    
+    currently just prints text_id to console
 
     """
     try:
