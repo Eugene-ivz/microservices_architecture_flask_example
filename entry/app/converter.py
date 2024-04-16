@@ -5,7 +5,6 @@ import pika
 from bson import ObjectId
 from flask import (
     Blueprint,
-    current_app,
     flash,
     redirect,
     render_template,
@@ -21,7 +20,7 @@ from app.extensions import mongo
 from app.forms import File_download_form, File_upload_form
 
 converter_bp = Blueprint("converter", __name__, url_prefix="/converter")
-
+    
 # pymongo
 mongo_pdf = mongo.cx[Config.MONGO_URI_PDF]
 mongo_txt = mongo.cx[Config.MONGO_URI_TXT]
@@ -41,7 +40,7 @@ ch = conn.channel()
 def upload():
     payload, error = validate_jwt(request)
     if error:
-        return error
+        return 'need to login', 401
 
     form = File_upload_form()
 
@@ -53,7 +52,7 @@ def upload():
             f = form.file.data
             error = upload_file(f, gfs_pdf, ch, payload)
             if error:
-                flash(error)
+                flash('failed to upload file')
                 return redirect(url_for("converter.upload"), 303)
             return redirect(url_for("converter.download"), 303)
         else:
@@ -66,7 +65,7 @@ def download():
     payload, error = validate_jwt(request)
 
     if error:
-        return error
+        return 'need to login', 401
 
     form = File_download_form()
 

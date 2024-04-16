@@ -5,12 +5,13 @@ import sys
 import gridfs
 import pika
 from bson.objectid import ObjectId
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 from pymongo import MongoClient
 
 from app.convert_utils import convert_to_txt
 
-load_dotenv()
+env_file = find_dotenv(f'.env.{os.getenv("APP_ENV", "dev")}')
+load_dotenv(env_file)
 
 
 def main():
@@ -20,7 +21,7 @@ def main():
 
     gfs_pdf = gridfs.GridFS(db_pdf)
     gfs_txt = gridfs.GridFS(db_txt)
-
+    
     conn = pika.BlockingConnection(pika.URLParameters(os.getenv("RABBITMQ_HOST")))
     ch = conn.channel()
 

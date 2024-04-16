@@ -2,11 +2,12 @@ import os
 import sys
 
 import pika
-from dotenv import load_dotenv
+from dotenv import find_dotenv, load_dotenv
 
 from app.utils import file_ready
 
-load_dotenv()
+env_file = find_dotenv(f'.env.{os.getenv("APP_ENV", "dev")}')
+load_dotenv(env_file)
 
 
 def main():

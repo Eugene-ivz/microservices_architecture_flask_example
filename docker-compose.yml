@@ -1,42 +1,112 @@
 version: '3.8'
 services:
   auth:
-    image: 'auth'
+    container_name: auth_c
     build:
       context: auth
-      dockerfile: Dockerfile
+      dockerfile: auth.Dockerfile
+    environment:
+      - FLASK_ENV=${FLASK_ENV}
     ports:
-      - '5000:5000'
+      - '5010:5010'
+    restart: unless-stopped
+    depends_on:
+        postgres:
+          condition: service_healthy
+
   entry:
-    image: 'entry'
+    container_name: entry_c
     build:
       context: entry
-      dockerfile: Dockerfile
+      dockerfile: entry.Dockerfile
+    environment:
+      - FLASK_ENV=${FLASK_ENV}
     ports:
-      - '5001:5001'
+      - '5020:5020'
+    restart: unless-stopped
+    depends_on:
+        rabbitmq:
+          condition: service_healthy
+        mongodb:
+          condition: service_started
+
   converter:
-    image: 'converter'
+    container_name: converter_c
     build:
       context: converter
-      dockerfile: Dockerfile
+      dockerfile: converter.Dockerfile
+    environment:
+      - APP_ENV=${FLASK_ENV}
+    restart: unless-stopped
+    depends_on:
+        rabbitmq:
+          condition: service_healthy
+
   notification:
-    image: 'notification'
+    container_name: notification_c
     build:
       context: notification
-      dockerfile: Dockerfile
+      dockerfile: notification.Dockerfile
+    environment:
+      - APP_ENV=${FLASK_ENV}
+    restart: unless-stopped
+    depends_on:
+        rabbitmq:
+          condition: service_healthy
+        mongodb:
+          condition: service_started
+        converter:
+          condition: service_started
 
   mongodb:
-    image: 'mongo'
+    container_name: mongodb
+    image: mongo:5.0.26-focal
     ports:
-      - '27017:27017'
+      - '27050:27017'
+    restart: always
+    volumes:
+      - mongodata:/data/db
 
   rabbitmq:
-    image: 'rabbitmq'
+    container_name: rabbitmq
+    image: rabbitmq:3.13.1-management
     ports:
-      - '5672:5672'
+      - 5672:5672
+      - 8050:15672
+    restart: unless-stopped
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 10s
+      timeout: 10s
+      retries: 3
       
   postgres:
-    image: 'postgres'
+    container_name: postgres_auth
+    image: postgres:16.2
+    shm_size: 128mb
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - PGDATA=${PGDATA} /data/postgres
+    volumes:
+       - postgresdata:/data/postgres
     ports:
-      - '5432:5432'
+      - '5555:5432'
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d users"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+
+volumes:
+  postgresdata:
+  mongodata:
 

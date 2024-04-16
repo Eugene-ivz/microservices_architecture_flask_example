@@ -1,5 +1,4 @@
 import json
-import os
 
 import pika
 
@@ -10,7 +9,7 @@ from app.config import Config
 def upload_file(f, gfs, ch, payload):
     try:
         file_id = gfs.put(f, filename=f.filename, contentType=f.mimetype)
-    except Exception as e:
+    except:
         return "upload failed", 500
     # file_id object need to be converted to string
     msg = {"pdf_id": str(file_id), "text_id": None, "username": payload["sub"]}

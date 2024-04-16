@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, jsonify, make_response, request, url_for
+from flask import Blueprint, flash, jsonify, request
 from flask_jwt_extended import (
     current_user,
     get_jwt,
@@ -41,7 +41,7 @@ def create_jwt():
             set_refresh_cookies(response, refresh_token)
             return response
     except Exception as e:
-        return "invalid credentials 2", 401
+        return "invalid credentials", 401
 
 
 @auth_bp.route("/validate", methods=["POST"])

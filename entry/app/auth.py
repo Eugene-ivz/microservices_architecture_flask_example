@@ -22,6 +22,8 @@ def user_registration():
         if not error:
             flash("Thanks for registering")
             return redirect(url_for("auth.login"), 303)
+        else:
+            flash('User or email already exists')
     return render_template("auth/registration.html", form=form)
 
 

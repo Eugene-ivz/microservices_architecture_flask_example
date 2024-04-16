@@ -21,7 +21,7 @@ def create_app(test_config=None) -> Flask:
     app.config["MAX_CONTENT_LENGTH"] = 20 * 1024 * 1024
 
     csrf.init_app(app)
-
+    
     mongo.init_app(app)
 
     from app.converter import converter_bp  # isort:skip
