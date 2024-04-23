@@ -26,11 +26,11 @@ class DevelopmentConfig(Config):
 
 class ProductionConfig(Config):
     ENV = "production"
-    AUTH_VALIDATE_JWT = "http://host.docker.internal:5010/auth/validate"
-    AUTH_CREATE_JWT = "http://host.docker.internal:5010/auth/login"
-    AUTH_LOGOUT = "http://host.docker.internal:5010/auth/logout"
-    AUTH_USER_REGISTRATION = "http://host.docker.internal:5010//users/create"
-    MONGO_URI = "mongodb://host.docker.internal:27050"
+    AUTH_VALIDATE_JWT = "http://auth:5010/auth/validate"
+    AUTH_CREATE_JWT = "http://auth:5010/auth/login"
+    AUTH_LOGOUT = "http://auth:5010/auth/logout"
+    AUTH_USER_REGISTRATION = "http://auth:5010//users/create"
+    MONGO_URI = "mongodb://mongodb:27017"
 
 class TestingConfig(DevelopmentConfig):
     ENV = "testing"

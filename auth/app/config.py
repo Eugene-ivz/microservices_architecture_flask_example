@@ -19,7 +19,7 @@ class Config(object):
     JWT_CSRF_CHECK_FORM = True
     # cors
     CORS_SUPPORTS_CREDENTIALS = True
-    CORS_ORIGINS = ["http://127.0.0.1:5020", "http://localhost:5020", 'host.docker.internal:5020']
+    CORS_ORIGINS = ["http://127.0.0.1:80", "http://localhost:80", 'host.docker.internal:80']
 
 
 class DevelopmentConfig(Config):
@@ -32,7 +32,7 @@ class DevelopmentConfig(Config):
 class ProductionConfig(Config):
     ENV = "production"
     SQLALCHEMY_DATABASE_URI = (
-        "postgresql+psycopg://postgres:postgres@host.docker.internal:5555/users"
+        "postgresql+psycopg://postgres:postgres@postgres:5432/users"
     )
 
 

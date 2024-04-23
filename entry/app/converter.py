@@ -44,8 +44,11 @@ def upload():
     :return: flask redirect response
     
     '''
-    payload, error = validate_jwt(request)
-    if error:
+    try:
+        payload, error = validate_jwt(request)
+        if error:
+            return error
+    except:
         return 'need to login', 401
 
     form = File_upload_form()
@@ -76,9 +79,11 @@ def download():
     :return: file | flask redirect response
     
     '''
-    payload, error = validate_jwt(request)
-
-    if error:
+    try:
+        payload, error = validate_jwt(request)
+        if error:
+            return error
+    except:
         return 'need to login', 401
 
     form = File_download_form()
