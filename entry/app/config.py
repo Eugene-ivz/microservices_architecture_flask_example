@@ -7,7 +7,7 @@ class Config(object):
     MONGO_URI_PDF = "db_pdf"
     MONGO_URI_TXT = "db_txt"
     # rabbitmq
-    RABBITMQ_HOST = "amqp://host.docker.internal:5672"
+    RABBITMQ_HOST = "amqp://rabbitmq:5672"
     PDF_TO_TEXT_QUEUE = "pdf_to_text"
     TEXT_TO_CONSUMER_QUEUE = "text_to_consumer"
     # api
