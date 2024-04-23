@@ -13,15 +13,18 @@
   + Converter - сервис, отвечающий за конвертацию файла
   + Notification - сервис, выдающий идентификатор конвертированного файла
 
-Используется авторизация через jwt httponly cookie. Данные базовой авторизации хранятся в postgresql. Файлы хранятся в mongodb(gridfs).
+Используется базовая аутентификация для получения jwt httponly cookie. Далее для доступа к маршрутам и эндпоинтам требуется куки.
+Данные базовой аутентификации хранятся в postgresql. Файлы хранятся в mongodb(gridfs).
 
 Используется брокер сообщений rabbitmq для связи между сервисами entry -> converter -> notification
 
+Используется nginx как реверс-прокси для auth и entry сервисов для предоставления единого доступа через localhost и порт 80.
+
 ## Маршруты
 
-  entry сервис порт 5020
+  entry сервис
   
-  Из браузера доступ по адресу **http://localhost:5020**
+  Из браузера доступ по адресу **http://localhost**
 
   + / - стартовая страница
   + auth/registration - регистрация нового пользователя
@@ -32,15 +35,15 @@
 
 ## Эндпоинты
 
-  auth сервис порт 5010
+  auth сервис
    
-  + POST auth/login - создание jwt
-  + POST auth/logout - занесение jwt в список отозванных токенов в бд
-  + POST auth/validate - валидирование jwt
-  + GET users/all - список всех пользователей
-  + GET users/whoami - получение данных пользователя
-  + POST users/create - создание записи пользователя в бд
-  + DELETE users//<uuid:id>/delete - удаление записи пользователя из бд
+  + POST api/auth/login - создание jwt при базовой аутентификации формата "username:password"
+  + POST api/auth/logout - занесение jwt в список отозванных токенов в бд
+  + POST api/auth/validate - валидация jwt в куки
+  + GET api/users/all - список всех пользователей
+  + GET api/users/whoami - получение данных пользователя
+  + POST api/users/create - занесение данных пользователя в бд
+  + DELETE api/users//<uuid:id>/delete - удаление данных пользователя из бд
 
 ## Запуск
 
